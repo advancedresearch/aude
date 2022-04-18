@@ -1,0 +1,10 @@
+=== Aude Help ===
+Made by Sven Nilsen, 2022
+
+Aude is based on paper "The Simple Essence of Automatic Differentiation"
+http://conal.net/papers/essence-of-ad/essence-of-ad-icfp.pdf
+
+Special commands:
+- bye            quits the program
+- echo <expr>    prints out debug format of expression
+- ``             prints separator for readability
