@@ -146,7 +146,7 @@ fn parse_bin(
         } else if let Ok((range, _)) = convert.meta_bool("tup") {
             convert.update(range);
             op = Some(Op::Tup);
-        } else if let Ok((range, _)) = convert.meta_bool("comp_lin") {
+        } else if let Ok((range, _)) = convert.meta_bool("lin_comp") {
             convert.update(range);
             op = Some(Op::Comp);
             meta.push(Meta::IsLinear(true));

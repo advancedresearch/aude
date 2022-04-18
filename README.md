@@ -57,11 +57,14 @@ All operators take 2 arguments, e.g. `(fun f64 f64)`.
 | snd      | Second tuple component    |
 | snd_par  | Second parallel component |
 
-| Op   | Description        | Example                      |
-| ---- | ------------------ | ---------------------------- |
-| comp | Composes functions | `g . f = (comp g f)`         |
-| fun  | Function type      | `f64 -> f64 = (fun f64 f64)` |
-| lam  | Lambda expression  | `\x:f64.x = (lam f64 $0)`    |
-| par  | Parallel tuple     | `f x g = (par f g)`          |
-| tup  | Tuple              | `(f, g) = (tup f g)`         |
-| ty   | Type               | `x : f64 = (ty x f64)`       |
+| Op       | Description               | Example                         |
+| -------- | ------------------------- | ------------------------------- |
+| comp     | Composes functions        | `g . f = (comp g f)`            |
+| lin_comp | Composes linear functions | `g . f = (lin_comp g f)`        |
+| fun      | Function type             | `f64 -> f64 = (fun f64 f64)`    |
+| lin      | Linear function type      | `f64 -o f64 = (lin f64 f64)`    |
+| lam      | Lambda expression         | `\x:f64.x = (lam f64 $0)`       |
+| lam_lin  | Linear lambda expression  | `\x:f64.x = (lin_lam f64 $0)`   |
+| par      | Parallel tuple            | `f x g = (par f g)`             |
+| tup      | Tuple                     | `(f, g) = (tup f g)`            |
+| ty       | Type                      | `x : f64 = (ty x f64)`          |
