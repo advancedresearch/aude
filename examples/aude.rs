@@ -3,7 +3,7 @@ use aude::*;
 use std::io::{self, Write};
 
 fn main() {
-    println!("=== Aude 0.1 ===");
+    println!("=== Aude 0.2 ===");
     println!("Type `help` for more information.");
     loop {
         print!("> ");

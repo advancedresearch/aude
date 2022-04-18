@@ -4,7 +4,7 @@
 An automated differentiation solver with a Lisp-like functional programming language
 
 ```text
-=== Aude 0.1 ===
+=== Aude 0.2 ===
 Type `help` for more information.
 > mul
 
