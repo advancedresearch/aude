@@ -474,7 +474,7 @@ impl Expr {
         }
     }
 
-    /// Derviate expression.
+    /// Derivate expression.
     pub fn deriv(&self, ctx: &mut Vec<Expr>) -> Option<Expr> {
         if self.is_linear().unwrap_or(false) {
             let ty = self.ty(ctx)?;
