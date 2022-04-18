@@ -474,16 +474,6 @@ impl Expr {
         }
     }
 
-    /// Gets the second part of the expression.
-    pub fn snd(&self) -> Option<Expr> {
-        match self {
-            Op(Op::Tup, ab, _) => Some(ab.1.clone()),
-            // Todo: Might need better normalisation.
-            Op(Op::Lam, ab, _) => ab.1.snd(),
-            _ => None,
-        }
-    }
-
     /// Derviate expression.
     pub fn deriv(&self, ctx: &mut Vec<Expr>) -> Option<Expr> {
         if self.is_linear().unwrap_or(false) {
