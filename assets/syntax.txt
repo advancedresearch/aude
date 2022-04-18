@@ -25,10 +25,10 @@
 2 bin = ["(" {
     "fun":"fun"
     "lin_lam":"lin_lam"
+    "lin_comp":"lin_comp"
     "lin":"lin_fun"
     "par":"par"
     "tup":"tup"
-    "comp_lin":"comp_lin"
     "comp":"comp"
     "lam":"lam"
     "ty":"ty"

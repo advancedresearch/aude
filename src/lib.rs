@@ -58,14 +58,17 @@
 //! | snd      | Second tuple component    |
 //! | snd_par  | Second parallel component |
 //!
-//! | Op   | Description        | Example                      |
-//! | ---- | ------------------ | ---------------------------- |
-//! | comp | Composes functions | `g . f = (comp g f)`         |
-//! | fun  | Function type      | `f64 -> f64 = (fun f64 f64)` |
-//! | lam  | Lambda expression  | `\x:f64.x = (lam f64 $0)`    |
-//! | par  | Parallel tuple     | `f x g = (par f g)`          |
-//! | tup  | Tuple              | `(f, g) = (tup f g)`         |
-//! | ty   | Type               | `x : f64 = (ty x f64)`       |
+//! | Op       | Description               | Example                         |
+//! | -------- | ------------------------- | ------------------------------- |
+//! | comp     | Composes functions        | `g . f = (comp g f)`            |
+//! | lin_comp | Composes linear functions | `g . f = (lin_comp g f)`        |
+//! | fun      | Function type             | `f64 -> f64 = (fun f64 f64)`    |
+//! | lin      | Linear function type      | `f64 -o f64 = (lin f64 f64)`    |
+//! | lam      | Lambda expression         | `\x:f64.x = (lam f64 $0)`       |
+//! | lam_lin  | Linear lambda expression  | `\x:f64.x = (lin_lam f64 $0)`   |
+//! | par      | Parallel tuple            | `f x g = (par f g)`             |
+//! | tup      | Tuple                     | `(f, g) = (tup f g)`            |
+//! | ty       | Type                      | `x : f64 = (ty x f64)`          |
 
 use Function::*;
 use Expr::*;
@@ -230,7 +233,7 @@ impl fmt::Display for Expr {
             Op(Op::Ty, ab, _) => write!(w, "(ty {} {})", ab.0, ab.1)?,
             Op(Op::Comp, ab, _) => {
                 if self.is_linear().unwrap_or(false) {
-                    write!(w, "(comp_lin {} {})", ab.0, ab.1)?
+                    write!(w, "(lin_comp {} {})", ab.0, ab.1)?
                 } else {
                     write!(w, "(comp {} {})", ab.0, ab.1)?
                 }
@@ -544,7 +547,7 @@ impl Expr {
                 let snd_b = snd(b_ret_ty.clone(), lin(b_arg_ty.clone(), b_ret_ty));
                 Some(lam(a_arg_ty,
                          tup(app(a, app(b.clone(), Var(0))),
-                             comp_lin(app(snd_b, app(da, app(b, Var(0)))),
+                             lin_comp(app(snd_b, app(da, app(b, Var(0)))),
                                       app(snd_a, app(db, Var(0)))))))
             }
             _ => None,
@@ -733,8 +736,8 @@ pub fn lam(a: Expr, b: Expr) -> Expr {Op(Op::Lam, Box::new((a, b)), vec![Meta::I
 pub fn lam_lin(a: Expr, b: Expr) -> Expr {Op(Op::Lam, Box::new((a, b)), vec![Meta::IsLinear(true)])}
 /// `comp`
 pub fn comp(a: Expr, b: Expr) -> Expr {Op(Op::Comp, Box::new((a, b)), vec![])}
-/// `comp_lin`
-pub fn comp_lin(a: Expr, b: Expr) -> Expr {Op(Op::Comp, Box::new((a, b)), vec![Meta::IsLinear(true)])}
+/// `lin_comp`
+pub fn lin_comp(a: Expr, b: Expr) -> Expr {Op(Op::Comp, Box::new((a, b)), vec![Meta::IsLinear(true)])}
 /// `ty`
 pub fn ty(a: Expr, b: Expr) -> Expr {Op(Op::Ty, Box::new((a, b)), vec![])}
 /// `fst`
@@ -905,6 +908,6 @@ mod tests {
         check("snd_par(f64)(f64)", "(lin (par f64 f64) f64)");
         check("(lam (par (tup f64 f64) (tup f64 f64)) (tup (par mul(fst_par((tup f64 f64))((tup f64 f64))($0)) mul(snd_par((tup f64 f64))((tup f64 f64))($0))) (lin_lam (par (tup f64 f64) (tup f64 f64)) (par snd(f64)((lin (tup f64 f64) f64))((lam (tup f64 f64) (tup mul($0) (lin_lam (tup f64 f64) add((tup mul((tup fst(f64)(f64)($0) fst(f64)(f64)($1))) mul((tup snd(f64)(f64)($0) snd(f64)(f64)($1))))))))(fst_par((tup f64 f64))((tup f64 f64))($0))) snd(f64)((lin (tup f64 f64) f64))((lam (tup f64 f64) (tup mul($0) (lin_lam (tup f64 f64) add((tup mul((tup fst(f64)(f64)($0) fst(f64)(f64)($1))) mul((tup snd(f64)(f64)($0) snd(f64)(f64)($1))))))))(snd_par((tup f64 f64))((tup f64 f64))($0)))))))", "(fun (par (tup f64 f64) (tup f64 f64)) (tup (par f64 f64) (lin (par (tup f64 f64) (tup f64 f64)) (lin (par (tup f64 f64) (tup f64 f64)) (par f64 f64)))))");
         check("(comp sin sin)", "(fun f64 f64)");
-        check("(lam f64 (tup sin(sin($0)) (comp_lin snd(f64)((lin f64 f64))((lam f64 (tup sin($0) (lin_lam f64 mul((tup $0 cos($1))))))(sin($0))) snd(f64)((lin f64 f64))((lam f64 (tup sin($0) (lin_lam f64 mul((tup $0 cos($1))))))($0)))))", "(fun f64 (tup f64 (lin f64 f64)))");
+        check("(lam f64 (tup sin(sin($0)) (lin_comp snd(f64)((lin f64 f64))((lam f64 (tup sin($0) (lin_lam f64 mul((tup $0 cos($1))))))(sin($0))) snd(f64)((lin f64 f64))((lam f64 (tup sin($0) (lin_lam f64 mul((tup $0 cos($1))))))($0)))))", "(fun f64 (tup f64 (lin f64 f64)))");
     }
 }
