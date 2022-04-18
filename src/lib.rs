@@ -519,8 +519,8 @@ impl Expr {
                 let snd_b = snd(b_ret_ty.clone(), lin(b_arg_ty, b_ret_ty));
                 Some(lam(arg_ty.clone(),
                      tup(par(app(a, fst_v.clone()), app(b, snd_v.clone())),
-                         lam_lin(arg_ty, par(app(snd_a, app(da, fst_v)),
-                                             app(snd_b, app(db, snd_v)))))))
+                         par(app(snd_a, app(da, fst_v)),
+                             app(snd_b, app(db, snd_v))))))
             }
             Op(Op::Comp, ab, _) => {
                 let a = ab.0.clone();
@@ -861,6 +861,36 @@ mod tests {
         id.analyze();
         assert_eq!(a.is_eq_to(&id), Some(true));
         assert_eq!(id.is_eq_to(&a), Some(true));
+    }
+
+    #[test]
+    fn test_d() {
+        fn check(f: &str, d: &str) {
+            use parsing::parse_str;
+
+            let ref mut ctx = vec![];
+            let mut a = parse_str(f).unwrap();
+            a.analyze();
+            let mut ad = a.deriv(ctx).unwrap();
+            ad.analyze();
+            let mut d = match parse_str(d) {
+                Ok(x) => x,
+                Err(err) => {
+                    eprintln!("{}", err);
+                    panic!()
+                }
+            };
+            d.analyze();
+            eprintln!("{} vs {}", ad, d);
+            assert_eq!(ad, d);
+        }
+
+        check("sin", "(lam f64 (tup sin($0) (lin_lam f64 mul((tup $0 cos($1))))))");
+        check("add", "(lin_lam (tup f64 f64) (tup add($0) add))");
+        check("mul", "(lam (tup f64 f64) (tup mul($0) (lin_lam (tup f64 f64) add((tup mul((tup fst(f64)(f64)($0) fst(f64)(f64)($1))) mul((tup snd(f64)(f64)($0) snd(f64)(f64)($1))))))))");
+        check("(par id(f64) id(f64))", "(lin_lam (par f64 f64) (tup (par id(f64) id(f64))($0) (par id(f64) id(f64))))");
+        check("(par sin sin)", "(lam (par f64 f64) (tup (par sin(fst_par(f64)(f64)($0)) sin(snd_par(f64)(f64)($0))) (par snd(f64)((lin f64 f64))((lam f64 (tup sin($0) (lin_lam f64 mul((tup $0 cos($1))))))(fst_par(f64)(f64)($0))) snd(f64)((lin f64 f64))((lam f64 (tup sin($0) (lin_lam f64 mul((tup $0 cos($1))))))(snd_par(f64)(f64)($0))))))");
+        check("(comp sin sin)", "(lam f64 (tup sin(sin($0)) (lin_comp snd(f64)((lin f64 f64))((lam f64 (tup sin($0) (lin_lam f64 mul((tup $0 cos($1))))))(sin($0))) snd(f64)((lin f64 f64))((lam f64 (tup sin($0) (lin_lam f64 mul((tup $0 cos($1))))))($0)))))");
     }
 
     #[test]
