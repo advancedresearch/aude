@@ -1,0 +1,40 @@
+6 app = [lexpr:"f" .r!(["(" .w? expr:"arg" .w? ")"])]
+5 lexpr = {
+  bin:"bin"
+  ty
+  fun
+  ["$" .$:"var"]
+  .$:"num"
+}
+4 fun = {
+  "id":"id"
+  "sin":"sin"
+  "cos":"cos"
+  "neg":"neg"
+  "mul":"mul"
+  "add":"add"
+  "fst_par":"fst_par"
+  "snd_par":"snd_par"
+  "fst":"fst"
+  "snd":"snd"
+}
+3 ty = {
+  ["type(" .$:"type_n" ")"]
+  "f64":"f64"
+}
+2 bin = ["(" {
+    "fun":"fun"
+    "lin_lam":"lin_lam"
+    "lin":"lin_fun"
+    "par":"par"
+    "tup":"tup"
+    "comp_lin":"comp_lin"
+    "comp":"comp"
+    "lam":"lam"
+    "ty":"ty"
+  } .w! expr:"a" .w! expr:"b" .w? ")"]
+1 expr = {
+  app:"app"
+  lexpr
+}
+0 doc = [.w? expr:"expr" .w?]
